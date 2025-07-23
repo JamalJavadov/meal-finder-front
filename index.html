@@ -537,10 +537,7 @@
 
 
         /* Mobile Responsiveness */
-        /* ========== MOBILE RESPONSIVENESS ========== */
-
-/* Mobile Menu Button */
-.mobile-menu {
+        .mobile-menu {
     display: none;
     background: none;
     border: none;
@@ -551,14 +548,7 @@
     transition: all 0.3s ease;
     border-radius: 8px;
 }
-
-.mobile-menu:hover {
-    background: rgba(255, 103, 0, 0.1);
-    transform: scale(1.1);
-}
-
-/* Tablet Landscape (1024px and below) */
-@media (max-width: 1024px) {
+    @media (max-width: 1024px) {
     .nav {
         padding: 1rem 3%;
     }
@@ -581,9 +571,7 @@
         transform: scale(0.9);
     }
 }
-
-/* Tablet Portrait (768px and below) */
-@media (max-width: 768px) {
+       @media (max-width: 768px) {
     /* Navigation */
     .nav {
         padding: 1rem 4%;
@@ -810,8 +798,7 @@
     }
 }
 
-/* Mobile Large (480px and below) */
-@media (max-width: 480px) {
+       @media (max-width: 480px) {
     /* Navigation */
     .nav {
         padding: 1rem 5%;
@@ -1054,9 +1041,7 @@
         font-size: 0.85rem;
     }
 }
-
-/* Mobile Small (360px and below) */
-@media (max-width: 360px) {
+        @media (max-width: 360px) {
     .nav {
         padding: 0.8rem 4%;
     }
@@ -1299,39 +1284,7 @@
         animation: none;
     }
 }
-
-/* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --light: #1a1a1a;
-        --dark: #ffffff;
-    }
-    
-    body {
-        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-        color: #ffffff;
-    }
-    
-    .header {
-        background: rgba(45, 45, 45, 0.95);
-    }
-    
-    .nav-links {
-        background: rgba(45, 45, 45, 0.98);
-    }
-    
-    .search-container, .feature-card, .recipe-card {
-        background: #2d2d2d;
-        color: #ffffff;
-    }
-    
-    .auth-buttons {
-        background: #2d2d2d;
-    }
-}
-
-/* Touch Device Optimizations */
-@media (hover: none) and (pointer: coarse) {
+        @media (hover: none) and (pointer: coarse) {
     .btn, .search-btn, .mobile-menu {
         min-height: 44px;
         min-width: 44px;
