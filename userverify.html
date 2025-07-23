@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MealFinder - İstifadəçi Hesabını Doğrula</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Əvvəlki səhifələrinizdən olan mövcud stillərdən istifadə edirik (uyğunluq üçün) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ff6700;
+            --secondary: #ff8c42;
+            --accent: #ffc285;
+            --success: #6ab04c;
+            --error: #e74c3c;
+            --info: #3498db;
+            --light: #fef4ec;
+            --dark: #2d2d2d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: linear-gradient(135deg, var(--light) 0%, #fff 100%);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Başlıq - Mövcud kodunuzdan kopyalanıb */
+        .header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 103, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 103, 0, 0.3);
+        }
+
+        .mobile-menu {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Doğrulama Formuna Aid Xüsusi Stiller (giriş/qeydiyyat formalarına bənzər) */
+        .verify-section {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 5% 50px;
+        }
+
+        .verify-container {
+            background: white;
+            padding: 3rem 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .verify-container h2 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group input[type="email"],
+        .form-group input[type="text"] { /* Kod girişi üçün tip "text" olaraq dəyişdirildi */
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input[type="email"]:focus,
+        .form-group input[type="text"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 103, 0, 0.2);
+            outline: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+        }
+
+        .form-text {
+            margin-top: 1.5rem;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .form-text a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .form-text a:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+
+        /* Uğur/Xəta Mesaj Qutusu */
+        .message-box {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .message-box.success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .message-box.error {
+            background-color: var(--error);
+            color: white;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Doğrulama səhifəsi üçün responsiv tənzimləmələr */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .verify-container {
+                padding: 2rem 1.5rem;
+                margin: 0 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .verify-container h2 {
+                font-size: 1.8rem;
+            }
+
+            .form-group input {
+                padding: 0.7rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .submit-btn {
+                padding: 0.9rem;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <a href="index.html" class="logo">
+                <i class="fas fa-utensils"></i>
+                MealFinder
+            </a>
+            
+            <ul class="nav-links">
+                <li><a href="index.html#home">Əsas Səhifə</a></li>
+                <li><a href="index.html#features">Xüsusiyyətlər</a></li>
+                <li><a href="#recipes">Reseptlər</a></li>
+                <li><a href="#about">Haqqımızda</a></li>
+                <li><a href="#contact">Əlaqə</a></li>
+            </ul>
+
+            <div class="auth-buttons">
+                <a href="login.html" class="btn btn-outline">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Daxil Ol
+                </a>
+                <a href="register.html" class="btn btn-outline">
+                    <i class="fas fa-user-plus"></i>
+                    Qeydiyyat
+                </a>
+            </div>
+
+            <button class="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <section class="verify-section">
+        <div class="verify-container">
+            <h2>İstifadəçi Hesabınızı Doğrulayın</h2>
+            <p class="form-text" style="margin-bottom: 2rem;">Zəhmət olmasa, qeydiyyatdan keçdiyiniz e-poçt ünvanınıza göndərilən doğrulama kodunu daxil edin.</p>
+
+            <div id="messageBox" class="message-box" style="display: none;"></div>
+            
+            <form id="verificationForm" action="" method="POST">
+                <div class="form-group">
+                    <label for="email">E-poçt Ünvanı</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="code">Doğrulama Kodu</label>
+                    <input type="text" id="code" name="code" required maxlength="6">
+                </div>
+
+                <button type="submit" class="btn btn-primary submit-btn">Hesabı Doğrula</button>
+            </form>
+
+            <p class="form-text">Kod almadınız? <a href="#" id="resendCodeLink">Kodu Yenidən Göndər</a></p>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const verificationForm = document.getElementById('verificationForm');
+            const emailInput = document.getElementById('email');
+            const codeInput = document.getElementById('code');
+            const submitBtn = document.querySelector('.submit-btn');
+            const messageBox = document.getElementById('messageBox');
+            const resendCodeLink = document.getElementById('resendCodeLink');
+
+            // ƏHƏMİYYƏTLİ: İstifadəçi kod doğrulama üçün backend URL-iniz
+            const USER_VERIFY_URL = 'http://localhost:8081/api/v1/auth/verify-code'; // Aşbaz kontekstindən İstifadəçi kontekstinə dəyişdirildi
+            // Əlavə: Kodu yenidən göndərmək üçün URL (əgər backendiniz bunu dəstəkləyirsə)
+            const USER_RESEND_CODE_URL = 'http://localhost:8081/api/v1/auth/resend-code'; // Aşbaz kontekstindən İstifadəçi kontekstinə dəyişdirildi
+
+            // Mesajları göstərmək üçün funksiya (uğur/xəta)
+            function showMessage(message, type, autoHide = true) {
+                messageBox.textContent = message;
+                messageBox.className = 'message-box ' + type; // Sinfi 'success' və ya 'error' olaraq təyin et
+                messageBox.style.display = 'block';
+                if (autoHide) {
+                    // 5 saniyə sonra mesajı gizlət
+                    setTimeout(() => {
+                        messageBox.style.display = 'none';
+                    }, 5000);
+                }
+            }
+
+            // JWT payload-u dekodlamaq üçün funksiya (base64Url dekodlaması)
+            function parseJwt(token) {
+                try {
+                    const base64Url = token.split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join(''));
+                    return JSON.parse(jsonPayload);
+                } catch (e) {
+                    console.error("JWT tokenini parse etmək alınmadı:", e);
+                    return null;
+                }
+            }
+
+            // Əgər e-poçt daxil ol/qeydiyyatdan saxlanmışdısa, e-poçt sahəsini doldur
+            const storedEmail = localStorage.getItem('lastRegisteredEmail'); 
+            if (storedEmail) {
+                emailInput.value = storedEmail;
+            }
+
+            // Fetch API istifadə edərək forma təqdimatını idarə et
+            verificationForm.addEventListener('submit', async (e) => {
+                e.preventDefault(); // Defolt forma təqdimatını dayandır
+
+                messageBox.style.display = 'none'; // Əvvəlki mesajları gizlət
+
+                // Client-side validasiya
+                const email = emailInput.value.trim();
+                const code = codeInput.value.trim();
+
+                if (!email || !emailInput.checkValidity()) {
+                    showMessage('Zəhmət olmasa, etibarlı bir e-poçt ünvanı daxil edin.', 'error');
+                    return;
+                }
+                if (!code) {
+                    showMessage('Zəhmət olmasa, doğrulama kodunu daxil edin.', 'error');
+                    return;
+                }
+                // Əsas kod uzunluğu validasiyası (ümumi nümunələrə əsasən 6 rəqəm fərz edilir)
+                if (code.length < 4 || code.length > 6) { // Backendinizin kod uzunluğuna görə tənzimləyin
+                    showMessage('Doğrulama kodu 4-6 simvol uzunluğunda olmalıdır.', 'error');
+                    return;
+                }
+
+                submitBtn.disabled = true; // Təqdimat zamanı düyməni deaktiv et
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Doğrulanır...'; // Yükləmə fırlananını göstər
+
+                const requestBody = {
+                    email: email,
+                    code: code
+                };
+
+                try {
+                    const response = await fetch(USER_VERIFY_URL, { // USER_VERIFY_URL istifadə et
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+
+                    if (response.ok) {
+                        const contentType = response.headers.get('content-type');
+                        let successMessage = 'İstifadəçi hesabı uğurla doğrulandı! Panelləyə yönləndirilirsiniz...'; // Mesaj dəyişdirildi
+                        
+                        if (contentType && contentType.includes('application/json')) {
+                            const data = await response.json();
+                            successMessage = data.message || successMessage;
+                            
+                            if (data.token) {
+                                localStorage.setItem('jwtToken', data.token);
+                                console.log('JWT Token istifadəçi doğrulamasından qəbul edildi və yadda saxlandı.'); // Mesaj dəyişdirildi
+
+                                // Rolları çıxarmaq üçün JWT-ni parse et
+                                const decodedToken = parseJwt(data.token);
+                                if (decodedToken && decodedToken.roles && decodedToken.roles.length > 0) {
+                                    // Tapılan ilk rolu yadda saxla (məsələn, 'ROLE_USER')
+                                    localStorage.setItem('userRole', decodedToken.roles[0]); 
+                                    console.log('İstifadəçi rolu JWT-dən çıxarıldı və yadda saxlandı:', decodedToken.roles[0]);
+                                } else {
+                                    console.warn('JWT token tapıldı, lakin payload-da rol yoxdur və ya boş rol massivi var.');
+                                    localStorage.setItem('userRole', 'UNKNOWN'); // Defolt və ya geri dönüş
+                                }
+                            } else {
+                                console.warn('İstifadəçi doğrulaması uğurlu oldu, lakin JSON cavabında JWT token alınmadı.'); // Mesaj dəyişdirildi
+                            }
+                            if (data.refreshToken) {
+                                localStorage.setItem('refreshToken', data.refreshToken);
+                                console.log('Refresh Token istifadəçi doğrulamasından qəbul edildi və yadda saxlandı.'); // Mesaj dəyişdirildi
+                            } else {
+                                console.warn('İstifadəçi doğrulaması uğurlu oldu, lakin JSON cavabında Refresh Token alınmadı.'); // Mesaj dəyişdirildi
+                            }
+
+                        } else {
+                            const text = await response.text();
+                            successMessage = text || successMessage;
+                            console.warn('İstifadəçi doğrulaması düz mətn cavabı ilə uğurlu oldu. Tokenlər çıxarılmadı.'); // Mesaj dəyişdirildi
+                        }
+                        
+                        showMessage(successMessage, 'success', false); // Mesajı göstər, hələlik avtomatik gizlətmə
+
+                        // Uğurlu doğrulamadan sonra saxlanmış e-poçtu sil (istəyə görə)
+                        localStorage.removeItem('lastRegisteredEmail'); 
+
+                        // İstifadəçilər üçün birbaşa userdashboard.html səhifəsinə yönləndir
+                        setTimeout(() => {
+                            window.location.href = 'userdashboard.html'; 
+                        }, 2000); // 2 saniyə sonra yönləndir
+                    } else {
+                        const errorData = await response.json().catch(() => ({ message: null }));
+                        let errorMessage = errorData.message || `Xəta: ${response.status} ${response.statusText}`;
+                        
+                        if (!errorData.message && response.status !== 204) { 
+                            try {
+                                const textError = await response.text();
+                                if (textError) errorMessage = textError;
+                            } catch (err) { }
+                        }
+
+                        if (response.status === 400) { // Bad Request, tez-tez yanlış kod və ya e-poçt üçün
+                            errorMessage = errorData.message || "İstifadəçi doğrulaması alınmadı: Yanlış e-poçt və ya kod. Zəhmət olmasa, yenidən cəhd edin."; // Mesaj dəyişdirildi
+                        } else if (response.status === 404) { // Tapılmadı, məsələn, e-poçt qeydiyyatdan keçməyib
+                            errorMessage = errorData.message || "İstifadəçi doğrulaması alınmadı: Hesab tapılmadı və ya gözləyən doğrulama yoxdur."; // Mesaj dəyişdirildi
+                        } else if (response.status === 409) { // Konflikt, məsələn, kodun müddəti bitib
+                            errorMessage = errorData.message || "İstifadəçi doğrulaması alınmadı: Kodun müddəti bitib və ya artıq istifadə olunub."; // Mesaj dəyişdirildi
+                        }
+                        
+                        showMessage(errorMessage, 'error');
+                    }
+                } catch (error) {
+                    console.error('Şəbəkə və ya CORS xətası:', error);
+                    showMessage('Serverə qoşula bilmədi. Zəhmət olmasa, internet bağlantınızı yoxlayın və ya daha sonra yenidən cəhd edin.', 'error');
+                } finally {
+                    submitBtn.disabled = false; // Düyməni yenidən aktiv et
+                    submitBtn.innerHTML = 'Hesabı Doğrula'; // Düymə mətnini bərpa et
+                }
+            });
+
+            // Kodu yenidən göndərmə funksiyasını idarə et (əlavə)
+            resendCodeLink.addEventListener('click', async (e) => {
+                e.preventDefault();
+                messageBox.style.display = 'none';
+                const email = emailInput.value.trim();
+
+                if (!email || !emailInput.checkValidity()) {
+                    showMessage('Kodu yenidən göndərmək üçün zəhmət olmasa, etibarlı bir e-poçt ünvanı daxil edin.', 'error');
+                    return;
+                }
+
+                resendCodeLink.textContent = 'Göndərilir...';
+                resendCodeLink.style.pointerEvents = 'none'; // Göndərilmə zamanı linki deaktiv et
+
+                try {
+                    const response = await fetch(USER_RESEND_CODE_URL, { // USER_RESEND_CODE_URL istifadə et
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email: email })
+                    });
+
+                    if (response.ok) {
+                        const contentType = response.headers.get('content-type');
+                        let successMessage = 'Yeni kod istifadəçi e-poçtuna göndərildi! Zəhmət olmasa e-poçtunuzu yoxlayın.'; // Mesaj dəyişdirildi
+                        if (contentType && contentType.includes('application/json')) {
+                            const data = await response.json();
+                            successMessage = data.message || successMessage;
+                        } else {
+                            const text = await response.text();
+                            successMessage = text || successMessage;
+                        }
+                        showMessage(successMessage, 'success');
+                    } else {
+                        const errorData = await response.json().catch(() => ({ message: null }));
+                        let errorMessage = errorData.message || `Xəta: ${response.status} ${response.statusText}`;
+                        if (!errorData.message && response.status !== 204) { 
+                            try {
+                                const textError = await response.text();
+                                if (textError) errorMessage = textError;
+                            } catch (err) { }
+                        }
+                        showMessage(errorMessage, 'error');
+                    }
+                } catch (error) {
+                    console.error('Kodu yenidən göndərərkən şəbəkə və ya CORS xətası:', error);
+                    showMessage('Kodu yenidən göndərmək alınmadı. Server əlçatan deyil və ya şəbəkə xətası.', 'error');
+                } finally {
+                    resendCodeLink.textContent = 'Kodu Yenidən Göndər';
+                    resendCodeLink.style.pointerEvents = 'auto'; //Linki yenidən aktiv et
+                }
+            });
+
+
+            // Başlığın sürüşmə zamanı fonunun dəyişməsi (əvvəlki səhifələrdən kopyalanıb)
+            window.addEventListener('scroll', () => {
+                const header = document.querySelector('.header');
+                if (window.scrollY > 50) { 
+                    header.style.background = 'rgba(255, 255, 255, 0.98)';
+                    header.style.boxShadow = '0 2px 30px rgba(0, 0, 0, 0.15)';
+                } else {
+                    header.style.background = 'rgba(255, 255, 255, 0.95)';
+                    header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+                }
+            });
+
+            // Əsas mobil menyu dəyişdiricisi (əvvəlki səhifələrdən kopyalanıb)
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const navLinks = document.querySelector('.nav-links');
+
+            mobileMenu.addEventListener('click', () => {
+                navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+            });
+            
+            // Forma konteyneri üçün başlanğıc animasiya
+            setTimeout(() => {
+                document.querySelector('.verify-container').style.opacity = '1';
+                document.querySelector('.verify-container').style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

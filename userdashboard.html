@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MealFinder - İstifadəçi Paneli</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Əvvəlki səhifələrinizdən olan mövcud stillərdən istifadə edirik (uyğunluq üçün) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ff6700;
+            --secondary: #ff8c42;
+            --accent: #ffc285;
+            --success: #6ab04c;
+            --error: #e74c3c;
+            --info: #3498db;
+            --light: #fef4ec;
+            --dark: #2d2d2d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: linear-gradient(135deg, var(--light) 0%, #fff 100%);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Başlıq */
+        .header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center; /* auth-buttons div-də elementləri sırala */
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 103, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 103, 0, 0.3);
+        }
+
+        /* Başlıqdakı Profil Şəkli */
+        .header-profile-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid var(--primary);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .header-profile-image:hover {
+            transform: scale(1.1);
+        }
+
+        /* Dashboard-a Aid Stiller */
+        .dashboard-section {
+            flex-grow: 1;
+            padding: 100px 5% 50px; /* Başlıq üçün boşluq tənzimləməsi */
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-header h1 {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-header p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        /* Yemək Filtrləmə Bölməsi */
+        .filter-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin-bottom: 3rem;
+            /* Yeni: Hover effekti */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .filter-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+
+        .filter-section h3 {
+            font-size: 1.8rem;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .filter-form {
+            /* Dinamik məhsul inputları üçün flex olaraq dəyişdirildi */
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .product-filter-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            align-items: flex-end;
+            background: var(--light);
+            padding: 1rem;
+            border-radius: 10px;
+            position: relative; /* Sil düyməsinin mövqelənməsi üçün */
+            /* Yeni: Giriş animasiyası */
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInSlideUp 0.5s ease-out forwards;
+        }
+
+        /* Yeni Animasiya */
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+        .product-filter-group .form-group {
+            margin-bottom: 0;
+        }
+
+        .product-filter-group input[type="text"],
+        .product-filter-group input[type="number"] {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease; /* Yeni: Fokus hərəkəti üçün */
+        }
+
+        /* Yeni: Input fokus hərəkəti */
+        .product-filter-group input[type="text"]:focus,
+        .product-filter-group input[type="number"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 103, 0, 0.2);
+            transform: scale(1.02);
+            outline: none;
+        }
+
+        .remove-product-filter {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--error);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.2s ease, transform 0.2s ease; /* Yeni: Transform hərəkəti üçün */
+        }
+
+        .remove-product-filter:hover {
+            background: #c0392b;
+            transform: scale(1.2); /* Yeni: Hover hərəkəti */
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-actions button {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        /* Yeməklərin Göstərilməsi Qridi */
+        .meals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .meal-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer; /* Klikləməyə işarə edir */
+            /* Yeni: Giriş animasiyası */
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInSlideUp 0.6s ease-out forwards;
+        }
+
+        .meal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+
+        .meal-card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+        }
+
+        .meal-card-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meal-card-content h3 {
+            font-size: 1.5rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .meal-card-content .chef-name {
+            font-size: 0.95rem;
+            color: #888;
+            margin-bottom: 1rem;
+        }
+
+        .meal-card-content .products-list {
+            list-style: none;
+            margin-bottom: 1rem;
+            padding-left: 0;
+            font-size: 0.9rem;
+            color: #555;
+            flex-grow: 1;
+        }
+
+        .meal-card-content .products-list li {
+            margin-bottom: 0.3rem;
+        }
+
+        .meal-card-content .products-list li strong {
+            color: var(--primary);
+        }
+
+        /* Yemək Detalları Modalı */
+        .meal-detail-modal {
+            display: none; /* Əvvəlcədən gizlədilib */
+            position: fixed;
+            z-index: 1002; /* Profil modalından daha yüksək */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7); /* Daha tünd örtük */
+            justify-content: center;
+            align-items: center;
+            /* Yeni: Giriş/çıxış hərəkəti */
+            animation: fadeInOverlay 0.3s ease-out forwards;
+        }
+        /* Yeni: Overlay animasiyası */
+        @keyframes fadeInOverlay {
+            from { background-color: rgba(0,0,0,0); }
+            to { background-color: rgba(0,0,0,0.7); }
+        }
+        .meal-detail-modal.hidden {
+            animation: fadeOutOverlay 0.3s ease-out forwards;
+        }
+        @keyframes fadeOutOverlay {
+            from { background-color: rgba(0,0,0,0.7); }
+            to { background-color: rgba(0,0,0,0); }
+        }
+
+
+        .meal-detail-modal-content {
+            background-color: white;
+            margin: auto;
+            padding: 2.5rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 700px; /* Yemək detalları üçün daha geniş */
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+            animation: zoomIn 0.3s ease-out;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .meal-detail-modal-close {
+            color: #aaa;
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease; /* Yeni: Transform hərəkəti */
+        }
+
+        .meal-detail-modal-close:hover,
+        .meal-detail-modal-close:focus {
+            color: var(--dark);
+            text-decoration: none;
+            cursor: pointer;
+            transform: rotate(90deg); /* Yeni: Hover hərəkəti */
+        }
+
+        .meal-detail-modal-content h2 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .meal-detail-modal-content .chef-name {
+            font-size: 1rem;
+            color: #888;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .meal-detail-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .meal-detail-products h4 {
+            font-size: 1.4rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        .meal-detail-products ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .meal-detail-products li {
+            background: var(--light);
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            color: #555;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            /* Yeni: hover efekti */
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .meal-detail-products li:hover {
+            background: var(--accent);
+            transform: translateX(5px);
+        }
+
+
+        .meal-detail-products li strong {
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+
+        .meal-detail-products li .product-description {
+            font-size: 0.9rem;
+            color: #777;
+            margin-top: 0.2rem;
+        }
+
+        /* Profil Bölməsi (Modal) */
+        .profile-modal {
+            display: none; /* Əvvəlcədən gizlədilib */
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .profile-modal-content {
+            background-color: white;
+            margin: auto;
+            padding: 2.5rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            position: relative;
+            animation: zoomIn 0.3s ease-out;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .profile-modal-close {
+            color: #aaa;
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .profile-modal-close:hover,
+        .profile-modal-close:focus {
+            color: var(--dark);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .profile-modal-content h2 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .profile-details p {
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            color: #444;
+        }
+
+        .profile-details p strong {
+            color: var(--dark);
+        }
+
+        .profile-details .profile-image-display {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1.5rem;
+            display: block;
+            border: 3px solid var(--primary);
+        }
+
+        .profile-update-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-update-form input[type="text"],
+        .profile-update-form input[type="password"] {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .profile-update-form input[type="text"]:focus,
+        .profile-update-form input[type="password"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 103, 0, 0.2);
+            outline: none;
+        }
+
+        .profile-update-form .submit-btn {
+            margin-top: 1rem;
+        }
+
+        /* Uğur/Xəta Mesaj Qutusu */
+        .message-box {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .message-box.success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .message-box.error {
+            background-color: var(--error);
+            color: white;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsiv tənzimləmələr */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .dashboard-section {
+                padding: 80px 3% 30px;
+            }
+
+            .dashboard-header h1 {
+                font-size: 2.5rem;
+            }
+
+            .filter-form {
+                grid-template-columns: 1fr;
+            }
+
+            .meal-detail-modal-content {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-header h1 {
+                font-size: 2rem;
+            }
+            .filter-section {
+                padding: 1.5rem;
+            }
+            .meal-card-content {
+                padding: 1rem;
+            }
+            .profile-modal-content {
+                padding: 1.5rem;
+            }
+            .product-filter-group {
+                grid-template-columns: 1fr; /* Çox kiçik ekranlarda tək sütunu təmin edin */
+            }
+            .meal-detail-modal-content {
+                padding: 1rem;
+            }
+            .meal-detail-modal-content h2 {
+                font-size: 1.8rem;
+            }
+            .meal-detail-products h4 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <a href="index.html" class="logo">
+                <i class="fas fa-utensils"></i>
+                MealFinder
+            </a>
+            
+            <ul class="nav-links">
+                <li><a href="home.html">Əsas Səhifə</a></li>
+                <li><a href="#meals">Yeməklər</a></li>
+                <li><img id="headerProfileImage" src="https://placehold.co/40x40/ccc/ffffff?text=U" alt="Profil" class="header-profile-image"></li>
+                <li><a href="home.html" id="logoutBtn">Çıxış</a></li>
+            </ul>
+
+            <div class="auth-buttons" style="display: none;">
+                <a href="login.html" class="btn btn-outline">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Daxil Ol
+                </a>
+                <a href="register.html" class="btn btn-outline">
+                    <i class="fas fa-user-plus"></i>
+                    Qeydiyyat
+                </a>
+            </div>
+
+            <button class="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <section class="dashboard-section">
+        <div class="dashboard-header">
+            <h1>Panelinizə Xoş Gəlmisiniz!</h1>
+            <p>Dadlı yeməkləri kəşf edin və ya profilinizi idarə edin.</p>
+        </div>
+
+        <div class="filter-section">
+            <h3>Məhsula Göre Yeməkləri Filtirləyin</h3>
+            <div id="productFiltersContainer" class="filter-form">
+                <div class="product-filter-group">
+                    <div class="form-group">
+                        <label for="productName_0">Məhsul Adı</label>
+                        <input type="text" id="productName_0" class="filter-product-name" placeholder="məsələn, Toyuq">
+                    </div>
+                    <div class="form-group">
+                        <label for="productWeight_0">Minimum Çəki (qr)</label>
+                        <input type="number" id="productWeight_0" class="filter-product-weight" placeholder="məsələn, 100">
+                    </div>
+                    <div class="form-group">
+                        <label for="productCount_0">Minimum Say</label>
+                        <input type="number" id="productCount_0" class="filter-product-count" placeholder="məsələn, 1">
+                    </div>
+                    </div>
+            </div>
+            <div class="filter-actions">
+                <button type="button" class="btn btn-outline" id="addProductFilterBtn">
+                    <i class="fas fa-plus"></i> Başqa Məhsul Əlavə Et
+                </button>
+                <button type="submit" form="filterMealsFormDummy" class="btn btn-primary" id="applyFilterBtn">
+                    <i class="fas fa-filter"></i> Filtr Tətbiq Et
+                </button>
+                <button type="button" class="btn btn-outline" id="resetFilterBtn">
+                    <i class="fas fa-redo"></i> Filtri Sıfırla
+                </button>
+            </div>
+            <form id="filterMealsFormDummy" style="display:none;"></form> 
+            <div id="filterMessageBox" class="message-box" style="margin-top: 1.5rem; display: none;"></div>
+        </div>
+
+        <div id="mealsDisplay" class="meals-grid">
+            <p id="mealsLoadingMessage">Yeməklər yüklənir...</p>
+        </div>
+        <div id="mealsErrorMessage" class="message-box error" style="display: none; margin-top: 2rem;"></div>
+    </section>
+
+    <div id="mealDetailModal" class="meal-detail-modal">
+        <div class="meal-detail-modal-content">
+            <span class="meal-detail-modal-close">&times;</span>
+            <img id="modalMealImage" src="" alt="Yemək Şəkli" class="meal-detail-image">
+            <h2 id="modalMealName"></h2>
+            <p class="chef-name">Aşbaz: <span id="modalChefName"></span></p>
+            <div class="meal-detail-products">
+                <h4>Tərkibi:</h4>
+                <ul id="modalProductsList">
+                    </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="profileModal" class="profile-modal">
+        <div class="profile-modal-content">
+            <span class="profile-modal-close">&times;</span>
+            <h2>Profiliniz</h2>
+            <div id="profileMessageBox" class="message-box" style="display: none;"></div>
+
+            <div id="profileDetails" class="profile-details">
+                <img id="profileImageDisplay" src="https://placehold.co/120x120/ccc/ffffff?text=User" alt="Profil Şəkli" class="profile-image-display">
+                <p><strong>Tam Ad:</strong> <span id="profileFullName"></span></p>
+                <p><strong>E-poçt:</strong> <span id="profileEmail"></span></p>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1.5rem; text-align: center;">Profili Yenilə</h3>
+            <form id="profileUpdateForm" class="profile-update-form">
+                <div class="form-group">
+                    <label for="updateFullName">Tam Ad</label>
+                    <input type="text" id="updateFullName" name="fullName">
+                </div>
+                <div class="form-group">
+                    <label for="updatePassword">Yeni Şifrə</label>
+                    <input type="password" id="updatePassword" name="password" placeholder="Cari şifrəni saxlamaq üçün boş buraxın">
+                </div>
+                <button type="submit" class="btn btn-primary submit-btn">Profili Yenilə</button>
+            </form>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1.5rem; text-align: center;">Profil Şəklini Dəyişin</h3>
+            <form id="profileImageUploadForm" class="profile-update-form">
+                <div class="form-group">
+                    <label for="profileImageFile">Şəkil Seçin</label>
+                    <div class="custom-file-input-wrapper">
+                        <input type="file" id="profileImageFile" name="file" accept="image/*">
+                        <label for="profileImageFile" class="custom-file-input-label">Fayl Seçin</label>
+                        <span id="profileImageFileName" class="custom-file-input-filename">Fayl seçilməyib</span>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary submit-btn">Şəkli Yüklə</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const mealsDisplay = document.getElementById('mealsDisplay');
+            const mealsLoadingMessage = document.getElementById('mealsLoadingMessage');
+            const mealsErrorMessage = document.getElementById('mealsErrorMessage');
+            const headerProfileImage = document.getElementById('headerProfileImage');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const profileModal = document.getElementById('profileModal');
+            const profileModalClose = document.querySelector('.profile-modal-close');
+            const profileDetails = document.getElementById('profileDetails');
+            const profileImageDisplay = document.getElementById('profileImageDisplay');
+            const profileFullName = document.getElementById('profileFullName');
+            const profileEmail = document.getElementById('profileEmail');
+            const profileUpdateForm = document.getElementById('profileUpdateForm');
+            const updateFullNameInput = document.getElementById('updateFullName');
+            const updatePasswordInput = document.getElementById('updatePassword');
+            const profileMessageBox = document.getElementById('profileMessageBox');
+            const productFiltersContainer = document.getElementById('productFiltersContainer');
+            const addProductFilterBtn = document.getElementById('addProductFilterBtn');
+            const applyFilterBtn = document.getElementById('applyFilterBtn');
+            const resetFilterBtn = document.getElementById('resetFilterBtn');
+            const filterMessageBox = document.getElementById('filterMessageBox');
+            const profileImageUploadForm = document.getElementById('profileImageUploadForm');
+            const profileImageFile = document.getElementById('profileImageFile');
+            const profileImageFileName = document.getElementById('profileImageFileName');
+
+            // Yemək Detalları Modalı elementləri
+            const mealDetailModal = document.getElementById('mealDetailModal');
+            const modalMealImage = document.getElementById('modalMealImage');
+            const modalMealName = document.getElementById('modalMealName');
+            const modalChefName = document.getElementById('modalChefName');
+            const modalProductsList = document.getElementById('modalProductsList');
+            const mealDetailModalClose = document.querySelector('.meal-detail-modal-close');
+
+
+            let productFilterCounter = 0;
+
+
+            // API Son nöqtələri
+            const GET_ALL_MEALS_URL = 'http://localhost:8081/api/v1/meals/get-all-meals';
+            const FILTER_MEALS_URL = 'http://localhost:8081/api/v1/meals/get-meals-filter';
+            const USER_PROFILE_URL = 'http://localhost:8081/api/v1/user/profile';
+            const USER_UPDATE_URL = 'http://localhost:8081/api/v1/user/update';
+            const IMAGE_UPLOAD_URL = 'http://localhost:8081/api/v1/images/upload';
+
+            // --- Doğrulama və Səlahiyyət Yoxlaması ---
+            const jwtToken = localStorage.getItem('jwtToken');
+            const userRole = localStorage.getItem('userRole');
+
+            if (!jwtToken || userRole !== 'ROLE_USER') { 
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Mesajları göstərmək üçün funksiya (uğur/xəta)
+            function showMessage(messageBoxElement, message, type, autoHide = true) {
+                messageBoxElement.textContent = message;
+                messageBoxElement.className = 'message-box ' + type;
+                messageBoxElement.style.display = 'block';
+                if (autoHide) {
+                    setTimeout(() => {
+                        messageBoxElement.style.display = 'none';
+                    }, 5000);
+                }
+            }
+
+            // Yeni məhsul filtri qrupu əlavə etmək üçün funksiya
+            function addProductFilterGroup() {
+                productFilterCounter++;
+                const newFilterGroup = document.createElement('div');
+                newFilterGroup.classList.add('product-filter-group');
+                // Yeni qrup üçün animasiya gecikməsi
+                newFilterGroup.style.animationDelay = `${(productFilterCounter - 1) * 0.1}s`;
+                newFilterGroup.innerHTML = `
+                    <div class="form-group">
+                        <label for="productName_${productFilterCounter}">Məhsul Adı</label>
+                        <input type="text" id="productName_${productFilterCounter}" class="filter-product-name" placeholder="məsələn, Pomidor">
+                    </div>
+                    <div class="form-group">
+                        <label for="productWeight_${productFilterCounter}">Minimum Çəki (qr)</label>
+                        <input type="number" id="productWeight_${productFilterCounter}" class="filter-product-weight" placeholder="məsələn, 50">
+                    </div>
+                    <div class="form-group">
+                        <label for="productCount_${productFilterCounter}">Minimum Say</label>
+                        <input type="number" id="productCount_${productFilterCounter}" class="filter-product-count" placeholder="məsələn, 2">
+                    </div>
+                    <button type="button" class="remove-product-filter" data-group-id="${productFilterCounter}">
+                        &times;
+                    </button>
+                `;
+                productFiltersContainer.appendChild(newFilterGroup);
+
+                newFilterGroup.querySelector('.remove-product-filter').addEventListener('click', (e) => {
+                    e.target.closest('.product-filter-group').remove();
+                });
+            }
+
+            // Yemək detallarını modalda göstərmək üçün funksiya
+            function showMealDetails(meal) {
+                modalMealImage.src = meal.mealImage || 'https://placehold.co/700x300/ffc285/ffffff?text=Şəkil+Yoxdur';
+                modalMealImage.alt = meal.mealName;
+                modalMealName.textContent = meal.mealName;
+                modalChefName.textContent = meal.chefName || 'Naməlum Aşbaz';
+                modalProductsList.innerHTML = ''; // Əvvəlki məhsulları təmizlə
+
+                meal.products.forEach(p => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `
+                        <strong>${p.productName}</strong>: ${p.productWeight}qr, ${p.productCount} əd.
+                        ${p.description ? `<span class="product-description">${p.description}</span>` : ''}
+                    `;
+                    modalProductsList.appendChild(listItem);
+                });
+
+                mealDetailModal.classList.remove('hidden'); // Gizlətmə animasiyasını sil
+                mealDetailModal.style.display = 'flex'; // Modalı göstər
+            }
+
+            // Yeməkləri yükləmək və göstərmək üçün funksiya
+            async function fetchAndDisplayMeals(filterData = null) {
+                mealsDisplay.innerHTML = '';
+                mealsLoadingMessage.style.display = 'block';
+                mealsErrorMessage.style.display = 'none';
+
+                try {
+                    const url = filterData ? FILTER_MEALS_URL : GET_ALL_MEALS_URL;
+                    const method = filterData ? 'POST' : 'GET';
+                    const headers = {
+                        'Authorization': `Bearer ${jwtToken}`,
+                        'Content-Type': 'application/json'
+                    };
+                    const body = filterData ? JSON.stringify(filterData) : null;
+
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: headers,
+                        body: body
+                    });
+
+                    if (response.ok) {
+                        const meals = await response.json();
+                        mealsLoadingMessage.style.display = 'none';
+                        if (meals.length === 0) {
+                            mealsDisplay.innerHTML = '<p style="text-align: center; color: #888;">Kriteriyalarınıza uyğun yemək tapılmadı.</p>';
+                        } else {
+                            meals.forEach((meal, index) => { // İndeks əlavə edildi
+                                const mealCard = document.createElement('div');
+                                mealCard.classList.add('meal-card');
+                                mealCard.dataset.meal = JSON.stringify(meal); // Yemək məlumatını elementdə saxla
+                                // Hər kart üçün animasiya gecikməsi
+                                mealCard.style.animationDelay = `${index * 0.05}s`;
+
+                                const productsListHtml = meal.products.map(p => `
+                                    <li><strong>${p.productName}</strong>: ${p.productWeight}qr, ${p.productCount} əd.</li>
+                                `).join('');
+                                // Qeyd: Kartda qısa olmaq üçün Təsvir atlanır, modalda göstərilir
+
+                                mealCard.innerHTML = `
+                                    <img src="${meal.mealImage || 'https://placehold.co/400x200/ffc285/ffffff?text=Şəkil+Yoxdur'}" 
+                                         alt="${meal.mealName}" class="meal-card-image" onerror="this.onerror=null;this.src='https://placehold.co/400x200/ffc285/ffffff?text=Şəkil+Yoxdur';">
+                                    <div class="meal-card-content">
+                                        <h3>${meal.mealName}</h3>
+                                        <p class="chef-name">Aşbaz: ${meal.chefName || 'Naməlum Aşbaz'}</p>
+                                        <ul class="products-list">
+                                            ${productsListHtml}
+                                        </ul>
+                                    </div>
+                                `;
+                                mealsDisplay.appendChild(mealCard);
+
+                                // Hər yemək kartına klik dinləyicisi əlavə et
+                                mealCard.addEventListener('click', () => {
+                                    showMealDetails(JSON.parse(mealCard.dataset.meal));
+                                });
+                            });
+                        }
+                    } else {
+                        mealsLoadingMessage.style.display = 'none';
+                        const errorData = await response.json().catch(() => ({ message: null }));
+                        let errorMessage = errorData.message || `Yeməklər yüklənmədi: ${response.status} ${response.statusText}`;
+                        if (!errorData.message && response.status !== 204) { 
+                             try {
+                                 const textError = await response.text();
+                                 if (textError) errorMessage = textError;
+                             } catch (err) { }
+                        }
+                        showMessage(mealsErrorMessage, errorMessage, 'error');
+                    }
+                } catch (error) {
+                    console.error('Yeməkləri yükləmə xətası:', error);
+                    mealsLoadingMessage.style.display = 'none';
+                    showMessage(mealsErrorMessage, 'Şəbəkə xətası. Yeməklər yüklənə bilmədi.', 'error');
+                }
+            }
+
+            // İstifadəçi profilini yükləmək və göstərmək üçün funksiya
+            async function fetchAndDisplayProfile() {
+                profileMessageBox.style.display = 'none';
+                try {
+                    const response = await fetch(USER_PROFILE_URL, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${jwtToken}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        const userProfile = await response.json();
+                        profileFullName.textContent = userProfile.userName || 'Məlumat yoxdur';
+                        profileEmail.textContent = userProfile.email || 'Məlumat yoxdur';
+                        updateFullNameInput.value = userProfile.userName || '';
+                        
+                        const imageUrl = userProfile.imagePath || 'https://placehold.co/120x120/ccc/ffffff?text=User';
+                        headerProfileImage.src = imageUrl;
+                        profileImageDisplay.src = imageUrl;
+
+                    } else {
+                        const errorData = await response.json().catch(() => ({ message: null }));
+                        let errorMessage = errorData.message || `Profil yüklənmədi: ${response.status} ${response.statusText}`;
+                        if (!errorData.message && response.status !== 204) { 
+                             try {
+                                 const textError = await response.text();
+                                 if (textError) errorMessage = textError;
+                             } catch (err) { }
+                        }
+                        showMessage(profileMessageBox, errorMessage, 'error');
+                    }
+                } catch (error) {
+                    console.error('Profil yüklənmə xətası:', error);
+                    showMessage(profileMessageBox, 'Şəbəkə xətası. Profil yüklənə bilmədi.', 'error');
+                }
+            }
+
+            // --- Hadisə Dinləyiciləri ---
+
+            // Çıxış funksionallığı
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('jwtToken');
+                localStorage.removeItem('refreshToken');
+                localStorage.removeItem('userRole');
+                window.location.href = 'index.html';
+            });
+
+            // Profil Modalını Aç (başlıqdakı profil şəklinə klikləməklə tetiklenir)
+            headerProfileImage.addEventListener('click', (e) => {
+                e.preventDefault();
+                profileModal.style.display = 'flex';
+                fetchAndDisplayProfile();
+            });
+
+            // Profil Modalını Bağla
+            profileModalClose.addEventListener('click', () => {
+                profileModal.style.display = 'none';
+            });
+
+            // Modaldan kənara kliklədikdə modalı bağla
+            window.addEventListener('click', (e) => {
+                if (e.target === profileModal) {
+                    profileModal.style.display = 'none';
+                }
+            });
+
+            // Yemək Detalları Modalını Bağla
+            mealDetailModalClose.addEventListener('click', () => {
+                mealDetailModal.classList.add('hidden'); // Gizlətmə animasiyası üçün sinif əlavə et
+                // Animasiya bitdikdən sonra modulu gizlət
+                mealDetailModal.addEventListener('animationend', function handler() {
+                    mealDetailModal.style.display = 'none';
+                    mealDetailModal.classList.remove('hidden');
+                    mealDetailModal.removeEventListener('animationend', handler);
+                });
+            });
+
+
+            // Yemək detalları modalından kənara kliklədikdə modalı bağla
+            window.addEventListener('click', (e) => {
+                if (e.target === mealDetailModal) {
+                    mealDetailModal.classList.add('hidden');
+                    mealDetailModal.addEventListener('animationend', function handler() {
+                        mealDetailModal.style.display = 'none';
+                        mealDetailModal.classList.remove('hidden');
+                        mealDetailModal.removeEventListener('animationend', handler);
+                    });
+                }
+            });
+
+
+            // Profil Yeniləmə Formunun Təqdimatını idarə et
+            profileUpdateForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                profileMessageBox.style.display = 'none';
+
+                const updateBtn = profileUpdateForm.querySelector('.submit-btn');
+                updateBtn.disabled = true;
+                updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yenilənir...';
+
+                const fullName = updateFullNameInput.value.trim();
+                const password = updatePasswordInput.value;
+
+                const requestBody = {
+                    fullName: fullName
+                };
+                if (password) {
+                    requestBody.password = password;
+                }
+
+                try {
+                    const response = await fetch(USER_UPDATE_URL, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${jwtToken}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+
+                    if (response.ok) {
+                        const contentType = response.headers.get('content-type');
+                        let successMessage = 'Profil uğurla yeniləndi!';
+                        if (contentType && contentType.includes('application/json')) {
+                            const data = await response.json();
+                            successMessage = data.message || successMessage;
+                        } else {
+                            const text = await response.text();
+                            successMessage = text || successMessage;
+                        }
+                        showMessage(profileMessageBox, successMessage, 'success');
+                        fetchAndDisplayProfile();
+                        updatePasswordInput.value = '';
+                    } else {
+                        const errorData = await response.json().catch(() => ({ message: null }));
+                        let errorMessage = errorData.message || `Profili yeniləmə alınmadı: ${response.status} ${response.statusText}`;
+                        if (!errorData.message && response.status !== 204) { 
+                             try {
+                                 const textError = await response.text();
+                                 if (textError) errorMessage = textError;
+                             } catch (err) { }
+                        }
+                        showMessage(profileMessageBox, errorMessage, 'error');
+                    }
+                } catch (error) {
+                    console.error('Profili yeniləmə xətası:', error);
+                    showMessage(profileMessageBox, 'Şəbəkə xətası. Profil yenilənə bilmədi.', 'error');
+                } finally {
+                    updateBtn.disabled = false;
+                    updateBtn.innerHTML = 'Profili Yenilə';
+                }
+            });
+
+            // Profil Şəklini Yükləmə Formunun Təqdimatını idarə et
+            profileImageUploadForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                profileMessageBox.style.display = 'none';
+
+                const uploadBtn = profileImageUploadForm.querySelector('.submit-btn');
+                uploadBtn.disabled = true;
+                uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yüklənir...';
+
+                const file = profileImageFile.files[0];
+                if (!file) {
+                    showMessage(profileMessageBox, 'Zəhmət olmasa, yükləmək üçün bir şəkil faylı seçin.', 'error');
+                    uploadBtn.disabled = false;
+                    uploadBtn.innerHTML = 'Şəkli Yüklə';
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch(IMAGE_UPLOAD_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${jwtToken}`
+                        },
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const contentType = response.headers.get('content-type');
+                        let successMessage = 'Profil şəkli uğurla yükləndi!';
+                        let imageUrl = null;
+
+                        if (contentType && contentType.includes('application/json')) {
+                            const data = await response.json();
+                            successMessage = data.message || successMessage;
+                            imageUrl = data.imageUrl;
+                        } else {
+                            const textResponse = await response.text();
+                            if (textResponse.startsWith('http')) {
+                                imageUrl = textResponse;
+                                successMessage = 'Profil şəkli uğurla yükləndi!';
+                            } else {
+                                successMessage = textResponse || successMessage;
+                            }
+                        }
+                        
+                        showMessage(profileMessageBox, successMessage, 'success');
+                        if (imageUrl) {
+                            headerProfileImage.src = imageUrl;
+                            profileImageDisplay.src = imageUrl;
+                        }
+                        profileImageFile.value = '';
+                        profileImageFileName.textContent = 'Fayl seçilməyib'; // Fayl adını sıfırla
+                    } else {
+                        const errorData = await response.json().catch(() => ({ message: null }));
+                        let errorMessage = errorData.message || `Şəkli yükləmə alınmadı: ${response.status} ${response.statusText}`;
+                        if (!errorData.message && response.status !== 204) { 
+                             try {
+                                 const textError = await response.text();
+                                 if (textError) errorMessage = textError;
+                             } catch (err) { }
+                        }
+                        showMessage(profileMessageBox, errorMessage, 'error');
+                    }
+                } catch (error) {
+                    console.error('Şəkli yükləmə xətası:', error);
+                    showMessage(profileMessageBox, 'Şəbəkə xətası. Şəkil yüklənə bilmədi.', 'error');
+                } finally {
+                    uploadBtn.disabled = false;
+                    uploadBtn.innerHTML = 'Şəkli Yüklə';
+                }
+            });
+
+            // Profil şəkil faylı seçiləndə fayl adını göstər
+            profileImageFile.addEventListener('change', function() {
+                if (this.files && this.files.length > 0) {
+                    profileImageFileName.textContent = this.files[0].name;
+                } else {
+                    profileImageFileName.textContent = 'Fayl seçilməyib';
+                }
+            });
+
+
+            // Məhsul Filtri Əlavə Et Düyməsini İdarə et
+            addProductFilterBtn.addEventListener('click', addProductFilterGroup);
+
+            // Filtri Tətbiq Et Düyməsini İdarə et (indi açıq şəkildə əlaqələndirilib)
+            applyFilterBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                filterMessageBox.style.display = 'none';
+
+                const productFilterGroups = document.querySelectorAll('.product-filter-group');
+                const productsFilter = [];
+
+                productFilterGroups.forEach(group => {
+                    const productNameInput = group.querySelector('.filter-product-name');
+                    const productWeightInput = group.querySelector('.filter-product-weight');
+                    const productCountInput = group.querySelector('.filter-product-count');
+
+                    const productName = productNameInput ? productNameInput.value.trim() : '';
+                    const productWeight = productWeightInput ? productWeightInput.value.trim() : '';
+                    const productCount = productCountInput ? productCountInput.value.trim() : '';
+
+                    if (productName || productWeight || productCount) {
+                        const productRequestDto = {};
+                        if (productName) productRequestDto.productName = productName;
+                        if (productWeight) productRequestDto.productWeight = parseFloat(productWeight);
+                        if (productCount) productRequestDto.productCount = parseInt(productCount);
+                        productsFilter.push(productRequestDto);
+                    }
+                });
+                
+                const mealFindDto = productsFilter.length > 0 ? { products: productsFilter } : null;
+                
+                fetchAndDisplayMeals(mealFindDto);
+            });
+
+            // Filtri Sıfırla Düyməsini İdarə et
+            resetFilterBtn.addEventListener('click', () => {
+                const allFilterGroups = productFiltersContainer.querySelectorAll('.product-filter-group');
+                for (let i = 1; i < allFilterGroups.length; i++) {
+                    allFilterGroups[i].remove();
+                }
+                const firstGroup = productFiltersContainer.querySelector('.product-filter-group');
+                if (firstGroup) {
+                    firstGroup.querySelector('.filter-product-name').value = '';
+                    firstGroup.querySelector('.filter-product-weight').value = '';
+                    firstGroup.querySelector('.filter-product-count').value = '';
+                }
+
+                filterMessageBox.style.display = 'none';
+                fetchAndDisplayMeals();
+            });
+
+
+            // İlkin yükləmə: Səhifə yüklənəndə bütün yeməkləri yüklə və göstər
+            fetchAndDisplayMeals();
+            // Həmçinin başlıq və ilkin modal vəziyyəti üçün profil şəklini və detallarını dərhal yüklə
+            fetchAndDisplayProfile(); 
+
+            // Başlığın sürüşmə zamanı fonunun dəyişməsi (əvvəlki səhifələrdən kopyalanıb)
+            window.addEventListener('scroll', () => {
+                const header = document.querySelector('.header');
+                if (window.scrollY > 50) { 
+                    header.style.background = 'rgba(255, 255, 255, 0.98)';
+                    header.style.boxShadow = '0 2px 30px rgba(0, 0, 0, 0.15)';
+                } else {
+                    header.style.background = 'rgba(255, 255, 255, 0.95)';
+                    header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+                }
+            });
+
+            // Əsas mobil menyu dəyişdiricisi (əvvəlki səhifələrdən kopyalanıb)
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const navLinks = document.querySelector('.nav-links');
+
+            mobileMenu.addEventListener('click', () => {
+                navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+            });
+        });
+    </script>
+</body>
+</html>

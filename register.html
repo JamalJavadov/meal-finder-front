@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MealFinder - Qeydiyyat</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Ana səhifənizdəki mövcud stillərdən istifadə edirik (uyğunluq üçün) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ff6700;
+            --secondary: #ff8c42;
+            --accent: #ffc285;
+            --success: #6ab04c;
+            --error: #e74c3c;
+            --info: #3498db;
+            --light: #fef4ec;
+            --dark: #2d2d2d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: linear-gradient(135deg, var(--light) 0%, #fff 100%);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Başlıq (Header) - Mövcud kodunuzdan kopyalanıb */
+        .header {
+            position: sticky; /* Qeydiyyat səhifəsi üçün "sticky" olaraq dəyişdirildi, ya da istəyə görə "fixed" saxlana bilər */
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 103, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 103, 0, 0.3);
+        }
+
+        .mobile-menu {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Qeydiyyat Formasına Aid Stiller */
+        .register-section {
+            flex-grow: 1; /* Bölməyə mövcud sahəni tutmağa imkan verir */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 5% 50px; /* Sabit başlıq üçün boşluq tənzimləməsi */
+        }
+
+        .register-container {
+            background: white;
+            padding: 3rem 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0; /* Animasiya üçün əvvəlcədən gizlədilib */
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Inputa fokuslanma hərəkəti */
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="password"] {
+            transition: all 0.3s ease;
+        }
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus,
+        .form-group input[type="password"]:focus {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 4px rgba(255, 103, 0, 0.3);
+        }
+
+
+        .register-container h2 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus,
+        .form-group input[type="password"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 103, 0, 0.2);
+            outline: none;
+        }
+
+        .role-selection {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .role-option {
+            background: var(--light);
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: var(--dark);
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .role-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .role-option.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 10px 25px rgba(255, 103, 0, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .role-option i {
+            font-size: 1.2rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+        }
+
+        .form-text {
+            margin-top: 1.5rem;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .form-text a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .form-text a:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+
+        /* Uğur/Xəta Mesaj Qutusu */
+        .message-box {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            display: none; /* Əvvəlcədən gizlədilib */
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .message-box.success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .message-box.error {
+            background-color: var(--error);
+            color: white;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+
+        /* Qeydiyyat səhifəsi üçün responsiv tənzimləmələr */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .register-container {
+                padding: 2rem 1.5rem;
+                margin: 0 1rem; /* Kiçik ekranlarda horizontal kənar boşluq əlavə et */
+            }
+            
+            .role-selection {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .register-container h2 {
+                font-size: 1.8rem;
+            }
+
+            .form-group input {
+                padding: 0.7rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .submit-btn {
+                padding: 0.9rem;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <a href="home.html" class="logo"> <i class="fas fa-utensils"></i>
+                MealFinder
+            </a>
+            
+            <ul class="nav-links">
+                <li><a href="home.html">Əsas Səhifə</a></li>
+                <li><a href="home.html">Xüsusiyyətlər</a></li>
+                <li><a href="userdashboard.html">Reseptlər</a></li> 
+                <li><a href="home.html">Haqqımızda</a></li> 
+                <li><a href="home.html">Əlaqə</a></li> 
+            </ul>
+
+            <div class="auth-buttons">
+                <a href="login.html" class="btn btn-outline"> <i class="fas fa-sign-in-alt"></i>
+                    Daxil Ol
+                </a>
+                <a href="register.html" class="btn btn-primary"> <i class="fas fa-user-plus"></i>
+                    Qeydiyyat
+                </a>
+            </div>
+
+            <button class="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <section class="register-section">
+        <div class="register-container">
+            <h2>Hesab Yaradın</h2>
+
+            <div id="messageBox" class="message-box" style="display: none;"></div>
+            
+            <div class="role-selection">
+                <div class="role-option active" id="userRole">
+                    <i class="fas fa-user"></i>
+                    İstifadəçi
+                </div>
+                <div class="role-option" id="chefRole">
+                    <i class="fas fa-hat-chef"></i>
+                    Aşbaz
+                </div>
+            </div>
+
+            <form id="registrationForm" action="/api/register/user" method="POST">
+                <div class="form-group" id="fullNameGroup">
+                    <label for="fullName">Tam Ad</label>
+                    <input type="text" id="fullName" name="fullName" required>
+                </div>
+
+                <div class="form-group" id="chefNameGroup" style="display: none;">
+                    <label for="chefName">Aşbaz Adı</label>
+                    <input type="text" id="chefName" name="chefName">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">E-poçt Ünvanı</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group" id="phoneNumberGroup" style="display: none;">
+                    <label for="phoneNumber">Telefon Nömrəsi</label>
+                    <input type="text" id="phoneNumber" name="phoneNumber">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Şifrə</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary submit-btn">Qeydiyyatdan Keç</button>
+            </form>
+
+            <p class="form-text">Artıq hesabınız var? <a href="login.html">Buradan Daxil Olun</a></p>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userRole = document.getElementById('userRole');
+            const chefRole = document.getElementById('chefRole');
+            const registrationForm = document.getElementById('registrationForm');
+            const fullNameGroup = document.getElementById('fullNameGroup');
+            const chefNameGroup = document.getElementById('chefNameGroup');
+            const phoneNumberGroup = document.getElementById('phoneNumberGroup');
+            const fullNameInput = document.getElementById('fullName');
+            const chefNameInput = document.getElementById('chefName');
+            const phoneNumberInput = document.getElementById('phoneNumber');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const submitBtn = document.querySelector('.submit-btn');
+            const messageBox = document.getElementById('messageBox');
+
+            // ƏHƏMİYYƏTLİ: Real backend URL-lərinizlə əvəz edin
+            const USER_REGISTER_URL = 'http://localhost:8081/api/v1/auth/register';
+            const CHEF_REGISTER_URL = 'http://localhost:8081/api/v1/authchef/register';
+
+            let currentRole = 'user'; // Hazırda seçilmiş rolu izləyir
+
+            // Mesajları göstərmək üçün funksiya (uğur/xəta)
+            function showMessage(message, type, autoHide = true) {
+                messageBox.textContent = message;
+                messageBox.className = 'message-box ' + type; // Sinfi 'success' və ya 'error' olaraq təyin et
+                messageBox.style.display = 'block';
+                if (autoHide) {
+                    // 5 saniyə sonra mesajı gizlət
+                    setTimeout(() => {
+                        messageBox.style.display = 'none';
+                    }, 5000);
+                }
+            }
+
+            // Rol əsasında formanı yeniləmək üçün funksiya
+            function updateFormForRole(role) {
+                currentRole = role; // Cari rol izləyicisini yenilə
+                if (role === 'user') {
+                    userRole.classList.add('active');
+                    chefRole.classList.remove('active');
+                    fullNameGroup.style.display = 'block';
+                    chefNameGroup.style.display = 'none';
+                    phoneNumberGroup.style.display = 'none';
+
+                    fullNameInput.setAttribute('required', 'true');
+                    chefNameInput.removeAttribute('required');
+                    phoneNumberInput.removeAttribute('required');
+
+                    // Form.action-ı burada təyin etməyə ehtiyac yoxdur, çünki fetch-də istifadə edəcəyik
+                } else { // aşbaz
+                    chefRole.classList.add('active');
+                    userRole.classList.remove('active');
+                    fullNameGroup.style.display = 'none';
+                    chefNameGroup.style.display = 'block';
+                    phoneNumberGroup.style.display = 'block';
+
+                    chefNameInput.setAttribute('required', 'true');
+                    phoneNumberInput.setAttribute('required', 'true');
+                    fullNameInput.removeAttribute('required');
+
+                    // Form.action-ı burada təyin etməyə ehtiyac yoxdur, çünki fetch-də istifadə edəcəyik
+                }
+            }
+
+            // Rol seçimi üçün hadisə dinləyiciləri
+            userRole.addEventListener('click', () => updateFormForRole('user'));
+            chefRole.addEventListener('click', () => updateFormForRole('chef'));
+
+            // Başlanğıc forma vəziyyətini defolt aktiv rola (İstifadəçi) əsasən təyin et
+            updateFormForRole('user');
+
+            // Fetch API istifadə edərək forma təqdimatını idarə et
+            registrationForm.addEventListener('submit', async (e) => {
+                e.preventDefault(); // Defolt forma təqdimatını dayandır
+
+                messageBox.style.display = 'none'; // Əvvəlki mesajları gizlət
+                submitBtn.disabled = true; // Təqdimat zamanı düyməni deaktiv et
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Qeydiyyatdan Keçirilir...'; // Yükləmə fırlananını göstər
+
+                let url;
+                let requestBody = {};
+
+                if (currentRole === 'user') {
+                    url = USER_REGISTER_URL;
+                    requestBody = {
+                        fullName: fullNameInput.value.trim(),
+                        email: emailInput.value.trim(),
+                        password: passwordInput.value
+                    };
+                } else { // aşbaz
+                    url = CHEF_REGISTER_URL;
+                    requestBody = {
+                        chefName: chefNameInput.value.trim(),
+                        email: emailInput.value.trim(),
+                        phoneNumber: phoneNumberInput.value.trim(),
+                        password: passwordInput.value
+                    };
+                }
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+
+                    // Cavabın OK (2xx status) olub olmadığını yoxla
+                    if (response.ok) {
+                        const contentType = response.headers.get('content-type');
+                        let successMessage = 'Qeydiyyat uğurlu oldu! Daxil olma səhifəsinə yönləndirilirsiniz...';
+
+                        if (contentType && contentType.includes('application/json')) {
+                            const data = await response.json();
+                            successMessage = data.message || successMessage;
+                        } else {
+                            const text = await response.text();
+                            successMessage = text || successMessage;
+                        }
+                        
+                        showMessage(successMessage, 'success', false); // Mesajı göstər, hələlik avtomatik gizlətmə
+
+                        // Qısa gecikmədən sonra login.html səhifəsinə yönləndir
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 2000); // 2 saniyə sonra yönləndir
+                    } else {
+                        // Backenddən gələn xəta mesajını parse etməyə cəhd et (adətən JSON)
+                        const errorData = await response.json().catch(() => ({ message: null }));
+                        let errorMessage = errorData.message || `Xəta: ${response.status} ${response.statusText}`;
+                        
+                        // Əgər errorData.message null olarsa, JSON olmayan xəta mesajları üçün geri dönüş
+                        if (!errorData.message && response.status !== 204) { 
+                             try {
+                                 const textError = await response.text();
+                                 if (textError) errorMessage = textError;
+                             } catch (err) {
+                                 // göz ardı et, defolt mesaj artıq var
+                             }
+                        }
+
+                        if (response.status === 401) {
+                            errorMessage = "Qeydiyyat uğursuz oldu: İcazəsiz. Zəhmət olmasa, server konfiqurasiyasını yoxlayın və ya dəstəklə əlaqə saxlayın.";
+                        } else if (response.status === 400 && errorData.errors) {
+                             // Validasiya xətalarını idarə et, əgər backendiniz onları bu şəkildə göndərirsə:
+                             // { "errors": ["Email is required", "Password must be at least 6 characters"] }
+                            errorMessage = "Qeydiyyat uğursuz oldu: " + errorData.errors.join(", ");
+                        } else if (response.status === 409) { // məsələn, e-poçt artıq mövcuddur
+                            errorMessage = errorData.message || "Qeydiyyat uğursuz oldu: Bu e-poçt ilə artıq hesab mövcuddur.";
+                        }
+                        
+                        showMessage(errorMessage, 'error');
+                    }
+                } catch (error) {
+                    console.error('Şəbəkə və ya CORS xətası:', error);
+                    showMessage('Serverə qoşula bilmədi. Zəhmət olmasa, internet bağlantınızı yoxlayın və ya daha sonra yenidən cəhd edin.', 'error');
+                } finally {
+                    submitBtn.disabled = false; // Düyməni yenidən aktiv et
+                    submitBtn.innerHTML = 'Qeydiyyatdan Keç'; // Düymə mətnini bərpa et
+                }
+            });
+
+            // Başlığın sürüşmə zamanı fonunun dəyişməsi (ana səhifədən kopyalanıb)
+            window.addEventListener('scroll', () => {
+                const header = document.querySelector('.header');
+                if (window.scrollY > 50) { 
+                    header.style.background = 'rgba(255, 255, 255, 0.98)';
+                    header.style.boxShadow = '0 2px 30px rgba(0, 0, 0, 0.15)';
+                } else {
+                    header.style.background = 'rgba(255, 255, 255, 0.95)';
+                    header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+                }
+            });
+
+            // Əsas mobil menyu dəyişdiricisi (ana səhifədən kopyalanıb)
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const navLinks = document.querySelector('.nav-links');
+
+            mobileMenu.addEventListener('click', () => {
+                navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+            });
+            
+            // Forma konteyneri üçün başlanğıc animasiya
+            setTimeout(() => {
+                document.querySelector('.register-container').style.opacity = '1';
+                document.querySelector('.register-container').style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

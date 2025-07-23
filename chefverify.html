@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MealFinder - Verify Chef Account</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Re-use existing styles from your previous pages for consistency */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ff6700;
+            --secondary: #ff8c42;
+            --accent: #ffc285;
+            --success: #6ab04c;
+            --error: #e74c3c;
+            --info: #3498db;
+            --light: #fef4ec;
+            --dark: #2d2d2d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: linear-gradient(135deg, var(--light) 0%, #fff 100%);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header - Copied from your existing code */
+        .header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 103, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 103, 0, 0.3);
+        }
+
+        .mobile-menu {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Verification Form Specific Styles (similar to login/register) */
+        .verify-section {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 5% 50px;
+        }
+
+        .verify-container {
+            background: white;
+            padding: 3rem 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .verify-container h2 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group input[type="email"],
+        .form-group input[type="text"] { /* Changed type to text for code input */
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input[type="email"]:focus,
+        .form-group input[type="text"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 103, 0, 0.2);
+            outline: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+        }
+
+        .form-text {
+            margin-top: 1.5rem;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .form-text a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .form-text a:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+
+        /* Message Box for Success/Error */
+        .message-box {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .message-box.success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .message-box.error {
+            background-color: var(--error);
+            color: white;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive adjustments for the verification page */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .verify-container {
+                padding: 2rem 1.5rem;
+                margin: 0 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .verify-container h2 {
+                font-size: 1.8rem;
+            }
+
+            .form-group input {
+                padding: 0.7rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .submit-btn {
+                padding: 0.9rem;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <a href="index.html" class="logo">
+                <i class="fas fa-utensils"></i>
+                MealFinder
+            </a>
+            
+            <ul class="nav-links">
+                <li><a href="index.html#home">Home</a></li>
+                <li><a href="index.html#features">Features</a></li>
+                <li><a href="#recipes">Recipes</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+
+            <div class="auth-buttons">
+                <a href="login.html" class="btn btn-outline">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Login
+                </a>
+                <a href="register.html" class="btn btn-outline">
+                    <i class="fas fa-user-plus"></i>
+                    Register
+                </a>
+            </div>
+
+            <button class="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <section class="verify-section">
+        <div class="verify-container">
+            <h2>Verify Your Chef Account</h2>
+            <p class="form-text" style="margin-bottom: 2rem;">Please enter the verification code sent to your registered chef email address.</p>
+
+            <div id="messageBox" class="message-box" style="display: none;"></div>
+            
+            <form id="verificationForm" action="" method="POST">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="code">Verification Code</label>
+                    <input type="text" id="code" name="code" required maxlength="6">
+                </div>
+
+                <button type="submit" class="btn btn-primary submit-btn">Verify Account</button>
+            </form>
+
+            <p class="form-text">Didn't receive a code? <a href="#" id="resendCodeLink">Resend Code</a></p>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const verificationForm = document.getElementById('verificationForm');
+            const emailInput = document.getElementById('email');
+            const codeInput = document.getElementById('code');
+            const submitBtn = document.querySelector('.submit-btn');
+            const messageBox = document.getElementById('messageBox');
+            const resendCodeLink = document.getElementById('resendCodeLink');
+
+            // IMPORTANT: Your backend URL for chef code verification
+            const CHEF_VERIFY_URL = 'http://localhost:8081/api/v1/authchef/verify-code';
+            // Optional: URL for resending code (if your backend supports it)
+            const CHEF_RESEND_CODE_URL = 'http://localhost:8081/api/v1/authchef/resend-code'; // Assuming a resend endpoint
+
+            // Function to display messages (success/error)
+            function showMessage(message, type, autoHide = true) {
+                messageBox.textContent = message;
+                messageBox.className = 'message-box ' + type; // Set class to 'success' or 'error'
+                messageBox.style.display = 'block';
+                if (autoHide) {
+                    // Hide message after 5 seconds
+                    setTimeout(() => {
+                        messageBox.style.display = 'none';
+                    }, 5000);
+                }
+            }
+
+            // Function to decode JWT payload (base64Url decode)
+            function parseJwt(token) {
+                try {
+                    const base64Url = token.split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join(''));
+                    return JSON.parse(jsonPayload);
+                } catch (e) {
+                    console.error("Failed to parse JWT token:", e);
+                    return null;
+                }
+            }
+
+            // Populate email field if it was stored from login/registration
+            const storedEmail = localStorage.getItem('lastRegisteredEmail'); 
+            if (storedEmail) {
+                emailInput.value = storedEmail;
+            }
+
+            // Handle form submission using Fetch API
+            verificationForm.addEventListener('submit', async (e) => {
+                e.preventDefault(); // Prevent default form submission
+
+                messageBox.style.display = 'none'; // Hide previous messages
+
+                // Client-side validation
+                const email = emailInput.value.trim();
+                const code = codeInput.value.trim();
+
+                if (!email || !emailInput.checkValidity()) {
+                    showMessage('Please enter a valid email address.', 'error');
+                    return;
+                }
+                if (!code) {
+                    showMessage('Please enter the verification code.', 'error');
+                    return;
+                }
+                // Basic code length validation (assuming 6 digits based on common patterns)
+                if (code.length < 4 || code.length > 6) { // Adjust as per your backend's code length
+                    showMessage('Verification code must be 4-6 characters long.', 'error');
+                    return;
+                }
+
+                submitBtn.disabled = true; // Disable button during submission
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...'; // Show loading spinner
+
+                const requestBody = {
+                    email: email,
+                    code: code
+                };
+
+                try {
+                    const response = await fetch(CHEF_VERIFY_URL, { // Use CHEF_VERIFY_URL
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+
+                    if (response.ok) {
+                        const contentType = response.headers.get('content-type');
+                        let successMessage = 'Chef account verified successfully! Redirecting to dashboard...';
+                        
+                        if (contentType && contentType.includes('application/json')) {
+                            const data = await response.json();
+                            successMessage = data.message || successMessage;
+                            
+                            if (data.token) {
+                                localStorage.setItem('jwtToken', data.token);
+                                console.log('JWT Token received and stored from chef verification.');
+
+                                // Parse JWT to extract roles
+                                const decodedToken = parseJwt(data.token);
+                                if (decodedToken && decodedToken.roles && decodedToken.roles.length > 0) {
+                                    // Assuming you want to store the first role or a specific one
+                                    localStorage.setItem('userRole', decodedToken.roles[0]); 
+                                    console.log('User role extracted from JWT and stored:', decodedToken.roles[0]);
+                                } else {
+                                    console.warn('JWT token found, but no roles or empty roles array in payload.');
+                                    localStorage.setItem('userRole', 'UNKNOWN'); // Default or fallback
+                                }
+                            } else {
+                                console.warn('Chef verification successful, but no JWT token received in JSON response.');
+                            }
+                            if (data.refreshToken) {
+                                localStorage.setItem('refreshToken', data.refreshToken);
+                                console.log('Refresh Token received and stored from chef verification.');
+                            } else {
+                                console.warn('Chef verification successful, but no Refresh Token received in JSON response.');
+                            }
+
+                        } else {
+                            const text = await response.text();
+                            successMessage = text || successMessage;
+                            console.warn('Chef verification successful with plain text response. No tokens extracted.');
+                        }
+                        
+                        showMessage(successMessage, 'success', false); // Show message, but don't auto-hide it yet
+
+                        // Clear stored email after successful verification if desired
+                        localStorage.removeItem('lastRegisteredEmail'); 
+
+                        // Redirect to chefdashboard.html (or based on role)
+                        setTimeout(() => {
+                            // You could add logic here to redirect based on the extracted role
+                            const userRole = localStorage.getItem('userRole');
+                            if (userRole && userRole.includes('CHEF')) { // Assuming a role like 'ROLE_CHEF' or 'CHEF'
+                                window.location.href = 'chefdashboard.html'; 
+                            } else {
+                                window.location.href = 'chefdashboard.html'; // Default for other roles
+                            }
+                        }, 2000); // Redirect after 2 seconds
+                    } else {
+                        const errorData = await response.json().catch(() => ({ message: null }));
+                        let errorMessage = errorData.message || `Error: ${response.status} ${response.statusText}`;
+                        
+                        if (!errorData.message && response.status !== 204) { 
+                            try {
+                                const textError = await response.text();
+                                if (textError) errorMessage = textError;
+                            } catch (err) { }
+                        }
+
+                        if (response.status === 400) { // Bad Request, often for invalid code or email
+                            errorMessage = errorData.message || "Chef verification failed: Invalid email or code. Please try again.";
+                        } else if (response.status === 404) { // Not Found, e.g., email not registered
+                            errorMessage = errorData.message || "Chef verification failed: Account not found or no pending verification.";
+                        } else if (response.status === 409) { // Conflict, e.g., code expired
+                            errorMessage = errorData.message || "Chef verification failed: Code expired or already used.";
+                        }
+                        
+                        showMessage(errorMessage, 'error');
+                    }
+                } catch (error) {
+                    console.error('Network or CORS error:', error);
+                    showMessage('Could not connect to the server. Please check your internet connection or try again later.', 'error');
+                } finally {
+                    submitBtn.disabled = false; // Re-enable button
+                    submitBtn.innerHTML = 'Verify Account'; // Restore button text
+                }
+            });
+
+            // Handle resend code functionality (optional)
+            resendCodeLink.addEventListener('click', async (e) => {
+                e.preventDefault();
+                messageBox.style.display = 'none';
+                const email = emailInput.value.trim();
+
+                if (!email || !emailInput.checkValidity()) {
+                    showMessage('Please enter a valid email address to resend the code.', 'error');
+                    return;
+                }
+
+                resendCodeLink.textContent = 'Sending...';
+                resendCodeLink.style.pointerEvents = 'none'; // Disable link during sending
+
+                try {
+                    const response = await fetch(CHEF_RESEND_CODE_URL, { // Use CHEF_RESEND_CODE_URL
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email: email })
+                    });
+
+                    if (response.ok) {
+                        const contentType = response.headers.get('content-type');
+                        let successMessage = 'New code sent to chef email! Please check your email.';
+                        if (contentType && contentType.includes('application/json')) {
+                            const data = await response.json();
+                            successMessage = data.message || successMessage;
+                        } else {
+                            const text = await response.text();
+                            successMessage = text || successMessage;
+                        }
+                        showMessage(successMessage, 'success');
+                    } else {
+                        const errorData = await response.json().catch(() => ({ message: null }));
+                        let errorMessage = errorData.message || `Error: ${response.status} ${response.statusText}`;
+                        if (!errorData.message && response.status !== 204) { 
+                            try {
+                                const textError = await response.text();
+                                if (textError) errorMessage = textError;
+                            } catch (err) { }
+                        }
+                        showMessage(errorMessage, 'error');
+                    }
+                } catch (error) {
+                    console.error('Network or CORS error during resend:', error);
+                    showMessage('Could not resend code. Server unreachable or network error.', 'error');
+                } finally {
+                    resendCodeLink.textContent = 'Resend Code';
+                    resendCodeLink.style.pointerEvents = 'auto'; // Re-enable link
+                }
+            });
+
+
+            // Header background change on scroll (copied from previous pages)
+            window.addEventListener('scroll', () => {
+                const header = document.querySelector('.header');
+                if (window.scrollY > 50) { 
+                    header.style.background = 'rgba(255, 255, 255, 0.98)';
+                    header.style.boxShadow = '0 2px 30px rgba(0, 0, 0, 0.15)';
+                } else {
+                    header.style.background = 'rgba(255, 255, 255, 0.95)';
+                    header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+                }
+            });
+
+            // Basic mobile menu toggle (copied from previous pages)
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const navLinks = document.querySelector('.nav-links');
+
+            mobileMenu.addEventListener('click', () => {
+                navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+            });
+            
+            // Initial animation for the form container
+            setTimeout(() => {
+                document.querySelector('.verify-container').style.opacity = '1';
+                document.querySelector('.verify-container').style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>
