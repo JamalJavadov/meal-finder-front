@@ -649,12 +649,10 @@
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         gap: 0.8rem;
         margin-top: 1rem;
-        display: none;
+        display: flex;
+        flex-direction: column;
     }
 
-    .auth-buttons.show {
-        display: flex;
-    }
 
     /* Hero Section */
     .hero {
@@ -1657,6 +1655,8 @@
 
         mobileMenu.addEventListener('click', () => {
             navLinks.classList.toggle('active'); // Toggle 'active' class
+            const authButtons = document.querySelector('.auth-buttons');
+    authButtons.classList.toggle('show');
         });
 
         // Close mobile menu when a link is clicked
