@@ -34,6 +34,14 @@
             color: var(--dark);
             background: linear-gradient(135deg, var(--light) 0%, #fff 100%);
             overflow-x: hidden;
+            text-align: center; /* Bütün məzmunu mərkəzə gətirir */
+        }
+
+        /* Container for content sections to control max-width and center them */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 5%;
         }
 
         /* Reusable Components */
@@ -48,6 +56,7 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            justify-content: center; /* Düymə məzmununu mərkəzə gətirir */
         }
 
         .btn-outline {
@@ -80,14 +89,14 @@
         }
 
         .section-title {
-            font-size: 2.5rem;
+            font-size: clamp(2rem, 5vw, 2.5rem);
             font-weight: 700;
             margin-bottom: 1rem;
             color: var(--dark);
         }
 
         .section-subtitle {
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 2vw, 1.2rem);
             color: #666;
             margin-bottom: 4rem;
             max-width: 600px;
@@ -120,7 +129,7 @@
         }
 
         .logo {
-            font-size: 2rem;
+            font-size: clamp(1.5rem, 4vw, 2rem);
             font-weight: bold;
             color: var(--primary);
             text-decoration: none;
@@ -130,7 +139,7 @@
         }
 
         .logo i {
-            font-size: 2.5rem;
+            font-size: clamp(2rem, 5vw, 2.5rem);
         }
 
         .nav-links {
@@ -192,6 +201,7 @@
             background: linear-gradient(135deg, var(--light) 0%, #fff 50%, var(--accent) 100%);
             position: relative;
             overflow: hidden;
+            text-align: center; /* Hissəni mərkəzə gətirir */
         }
 
         .hero::before {
@@ -220,6 +230,7 @@
             align-items: center;
             position: relative;
             z-index: 2;
+            text-align: left; /* Mətnin içərisini sola hizala */
         }
 
         .hero-content h1 {
@@ -372,16 +383,14 @@
             margin-bottom: 0.5rem;
         }
 
-        /* Features Section */
-        .features {
+        /* Sections */
+        .features, .recipes-section, .about-section, .stats {
             padding: 100px 5%;
-            background: white;
         }
 
-        .features-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            text-align: center;
+        /* Features Section */
+        .features {
+            background: white;
         }
 
         .features-grid {
@@ -439,57 +448,33 @@
         }
 
         .stats-container {
-            max-width: 1200px;
-            margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 3rem;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
             text-align: center;
         }
 
         .stat-item h3 {
-            font-size: 3rem;
+            font-size: clamp(2rem, 6vw, 3rem);
             font-weight: 800;
             margin-bottom: 0.5rem;
         }
 
         .stat-item p {
-            font-size: 1.1rem;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
             opacity: 0.9;
         }
 
         /* Recipes Section */
-        .recipes-section, .about-section {
-            padding: 100px 5%;
-            max-width: 1200px;
-            margin: 0 auto;
-            text-align: center;
-            min-height: 70vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
         .recipes-section {
             background: var(--light);
         }
 
-        .about-section {
-            background: white;
-        }
-
-        .recipes-section h2, .about-section h2 {
-            margin-bottom: 2rem;
-            color: var(--primary);
-        }
-
         .recipes-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 2rem;
             margin-top: 2rem;
-            width: 100%;
         }
 
         .recipe-card {
@@ -533,12 +518,19 @@
             padding: 0.6rem 1.2rem;
         }
 
+        /* About Section */
+        .about-section {
+            background: white;
+        }
+
         .about-section p {
-            font-size: 1.1rem;
+            font-size: clamp(1rem, 2vw, 1.1rem);
             line-height: 1.8;
             max-width: 800px;
             margin-bottom: 2rem;
             color: #555;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         /* Footer */
@@ -546,7 +538,6 @@
             background: var(--dark);
             color: white;
             padding: 3rem 5%;
-            text-align: center;
             font-size: 0.9rem;
         }
 
@@ -558,17 +549,9 @@
         /* Mobile Responsive Overrides */
         @media (max-width: 768px) {
             .nav {
-                padding: 1rem 3%; /* Daha kiçik padding */
+                padding: 1rem 3%;
             }
 
-            .logo {
-                font-size: 1.5rem;
-            }
-
-            .logo i {
-                font-size: 2rem;
-            }
-            
             .nav-links {
                 display: none;
                 flex-direction: column;
@@ -615,7 +598,7 @@
             }
             
             .auth-buttons-mobile {
-                display: none; /* Desktop-da gizlət */
+                display: none;
                 flex-direction: column;
                 width: 100%;
                 padding: 1rem 0;
@@ -629,7 +612,6 @@
             .auth-buttons-mobile .btn {
                 width: 80%;
                 margin: 0 auto;
-                justify-content: center;
             }
 
             .hero {
@@ -639,16 +621,12 @@
 
             .hero-container {
                 grid-template-columns: 1fr;
-                text-align: center;
                 gap: 2rem;
+                text-align: center; /* Mobil görünüşdə məzmunu mərkəzə gətirir */
             }
-
-            .hero-content h1 {
-                font-size: 2rem;
-            }
-
-            .hero-content p {
-                font-size: 1rem;
+            
+            .hero-content {
+                text-align: center;
             }
 
             .hero-actions {
@@ -667,6 +645,8 @@
             .search-container {
                 width: 100%;
                 max-width: 90%;
+                margin-left: auto;
+                margin-right: auto;
             }
 
             .hero-image {
@@ -689,14 +669,6 @@
             .stats-container {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 1rem;
-            }
-
-            .stat-item h3 {
-                font-size: 2rem;
-            }
-
-            .stat-item p {
-                font-size: 0.9rem;
             }
 
             .recipes-grid {
@@ -823,7 +795,7 @@
     </section>
 
     <section class="features" id="features">
-        <div class="features-container">
+        <div class="container">
             <h2 class="section-title">Niyə MealFinder-i Seçməlisiniz?</h2>
             <p class="section-subtitle">Yemək planlamasını asan və əyləncəli edən xüsusiyyətlərimizi kəşf edin</p>
             
@@ -880,7 +852,7 @@
     </section>
 
     <section class="stats">
-        <div class="stats-container">
+        <div class="container stats-container">
             <div class="stat-item">
                 <h3 id="recipesCount">0+</h3>
                 <p>Dadlı Reseptlər</p>
@@ -901,72 +873,78 @@
     </section>
 
     <section class="recipes-section" id="recipes">
-        <h2 class="section-title">Populyar Reseptlər</h2>
-        <p class="section-subtitle">Ən sevilən və yüksək reytinqli yeməklərimizdən bəzilərini araşdırın.</p>
-        <div class="recipes-grid">
-            <div class="recipe-card">
-                <img src="images/spagetti.webp" alt="Spaghetti Bolognese">
-                <div class="recipe-content">
-                    <h3>Spagetti Boloqnez</h3>
-                    <p>Zəngin, yavaş bişirilmiş ət sousu ilə klassik İtalyan makaron yeməyi.</p>
-                    <a href="#" class="btn btn-outline">Reseptə Baxın</a>
+        <div class="container">
+            <h2 class="section-title">Populyar Reseptlər</h2>
+            <p class="section-subtitle">Ən sevilən və yüksək reytinqli yeməklərimizdən bəzilərini araşdırın.</p>
+            <div class="recipes-grid">
+                <div class="recipe-card">
+                    <img src="images/spagetti.webp" alt="Spaghetti Bolognese">
+                    <div class="recipe-content">
+                        <h3>Spagetti Boloqnez</h3>
+                        <p>Zəngin, yavaş bişirilmiş ət sousu ilə klassik İtalyan makaron yeməyi.</p>
+                        <a href="#" class="btn btn-outline">Reseptə Baxın</a>
+                    </div>
+                </div>
+                <div class="recipe-card">
+                    <img src="images/toyuq.jpg" alt="Chicken Curry">
+                    <div class="recipe-content">
+                        <h3>Kremalı Toyuq Karri</h3>
+                        <p>Rahat axşam yeməyi üçün mükəmməl, dadlı və ətirli karri.</p>
+                        <a href="#" class="btn btn-outline">Reseptə Baxın</a>
+                    </div>
+                </div>
+                <div class="recipe-card">
+                    <img src="images/burger.jpg" alt="Vegan Burger">
+                    <div class="recipe-content">
+                        <h3>Doyurucu Vegan Burger</h3>
+                        <p>Doyurucu və sağlam, dadlı bitki əsaslı burger.</p>
+                        <a href="#" class="btn btn-outline">Reseptə Baxın</a>
+                    </div>
+                </div>
+                <div class="recipe-card">
+                    <img src="images/baliq.jpeg" alt="Baked Salmon with Asparagus">
+                    <div class="recipe-content">
+                        <h3>Bişmiş Somon və Qulançar</h3>
+                        <p>Omega-3 ilə zəngin, sadə, lakin zərif sağlam yemək.</p>
+                        <a href="#" class="btn btn-outline">Reseptə Baxın</a>
+                    </div>
+                </div>
+                <div class="recipe-card">
+                    <img src="images/edviytatlibaliq.jpg" alt="Fish Tacos">
+                    <div class="recipe-content">
+                        <h3>Ədviyyatlı Balıq Takosu</h3>
+                        <p>Təzə, şirəli və hazırlanması asan, bir az kəskin balıq takoları.</p>
+                        <a href="#" class="btn btn-outline">Reseptə Baxın</a>
+                    </div>
+                </div>
+                <div class="recipe-card">
+                    <img src="images/tort.webp" alt="Fluffy Pancakes">
+                    <div class="recipe-content">
+                        <h3>Qabarıq Qaragilə Pankeykləri</h3>
+                        <p>Bu yüngül və yumşaq pankeyklərlə gününüzə düzgün başlayın.</p>
+                        <a href="#" class="btn btn-outline">Reseptə Baxın</a>
+                    </div>
                 </div>
             </div>
-            <div class="recipe-card">
-                <img src="images/toyuq.jpg" alt="Chicken Curry">
-                <div class="recipe-content">
-                    <h3>Kremalı Toyuq Karri</h3>
-                    <p>Rahat axşam yeməyi üçün mükəmməl, dadlı və ətirli karri.</p>
-                    <a href="#" class="btn btn-outline">Reseptə Baxın</a>
-                </div>
-            </div>
-            <div class="recipe-card">
-                <img src="images/burger.jpg" alt="Vegan Burger">
-                <div class="recipe-content">
-                    <h3>Doyurucu Vegan Burger</h3>
-                    <p>Doyurucu və sağlam, dadlı bitki əsaslı burger.</p>
-                    <a href="#" class="btn btn-outline">Reseptə Baxın</a>
-                </div>
-            </div>
-            <div class="recipe-card">
-                <img src="images/baliq.jpeg" alt="Baked Salmon with Asparagus">
-                <div class="recipe-content">
-                    <h3>Bişmiş Somon və Qulançar</h3>
-                    <p>Omega-3 ilə zəngin, sadə, lakin zərif sağlam yemək.</p>
-                    <a href="#" class="btn btn-outline">Reseptə Baxın</a>
-                </div>
-            </div>
-            <div class="recipe-card">
-                <img src="images/edviytatlibaliq.jpg" alt="Fish Tacos">
-                <div class="recipe-content">
-                    <h3>Ədviyyatlı Balıq Takosu</h3>
-                    <p>Təzə, şirəli və hazırlanması asan, bir az kəskin balıq takoları.</p>
-                    <a href="#" class="btn btn-outline">Reseptə Baxın</a>
-                </div>
-            </div>
-            <div class="recipe-card">
-                <img src="images/tort.webp" alt="Fluffy Pancakes">
-                <div class="recipe-content">
-                    <h3>Qabarıq Qaragilə Pankeykləri</h3>
-                    <p>Bu yüngül və yumşaq pankeyklərlə gününüzə düzgün başlayın.</p>
-                    <a href="#" class="btn btn-outline">Reseptə Baxın</a>
-                </div>
-            </div>
+            <a href="#" class="btn btn-primary btn-large" style="margin-top: 3rem;">Bütün Reseptlərə Baxın <i class="fas fa-arrow-right"></i></a>
         </div>
-        <a href="#" class="btn btn-primary btn-large" style="margin-top: 3rem;">Bütün Reseptlərə Baxın <i class="fas fa-arrow-right"></i></a>
     </section>
 
     <section class="about-section" id="about">
-        <h2 class="section-title">MealFinder Haqqında</h2>
-        <p class="section-subtitle">Missiyamız evdə bişirməyi hər kəs üçün əlçatan, əyləncəli və ilhamverici etməkdir.</p>
-        <p>MealFinder sadə bir ideya ilə başladı: insanlara stress olmadan inanılmaz yeməklər kəşf etməyə və yaratmağa kömək etmək. Biz inanırıq ki, yemək bişirmək sevincli bir təcrübə olmalıdır, istər təcrübəli aşbaz olun, istər də mətbəxdə yeni başlayın.</p>
-        <p>Platformamız fərdiləşdirilmiş tövsiyələr, ağıllı yemək planlama alətləri və dünyanın hər yerindən geniş resept kitabxanası təklif etmək üçün qabaqcıl texnologiyadan istifadə edir. Biz yeməyə olan ehtirasımız və istifadəçilərimizə olan öhdəliyimizlə xüsusiyyətlərimizi və resept kolleksiyamızı daim genişləndiririk.</p>
-        <p>Böyüyən icmamıza qoşulun və MealFinder gündəlik yeməklərinizə yanaşma tərzinizi dəyişdirsin!</p>
-        <a href="#" class="btn btn-primary btn-large" style="margin-top: 1rem;">Haqqımızda Daha Çox Öyrən</a>
+        <div class="container">
+            <h2 class="section-title">MealFinder Haqqında</h2>
+            <p class="section-subtitle">Missiyamız evdə bişirməyi hər kəs üçün əlçatan, əyləncəli və ilhamverici etməkdir.</p>
+            <p>MealFinder sadə bir ideya ilə başladı: insanlara stress olmadan inanılmaz yeməklər kəşf etməyə və yaratmağa kömək etmək. Biz inanırıq ki, yemək bişirmək sevincli bir təcrübə olmalıdır, istər təcrübəli aşbaz olun, istər də mətbəxdə yeni başlayın.</p>
+            <p>Platformamız fərdiləşdirilmiş tövsiyələr, ağıllı yemək planlama alətləri və dünyanın hər yerindən geniş resept kitabxanası təklif etmək üçün qabaqcıl texnologiyadan istifadə edir. Biz yeməyə olan ehtirasımız və istifadəçilərimizə olan öhdəliyimizlə xüsusiyyətlərimizi və resept kolleksiyamızı daim genişləndiririk.</p>
+            <p>Böyüyən icmamıza qoşulun və MealFinder gündəlik yeməklərinizə yanaşma tərzinizi dəyişdirsin!</p>
+            <a href="#" class="btn btn-primary btn-large" style="margin-top: 1rem;">Haqqımızda Daha Çox Öyrən</a>
+        </div>
     </section>
 
     <footer class="footer">
-        <p>&copy; 2025 MealFinder. Bütün hüquqlar qorunur.</p>
+        <div class="container">
+            <p>&copy; 2025 MealFinder. Bütün hüquqlar qorunur.</p>
+        </div>
     </footer>
 
     <script>
