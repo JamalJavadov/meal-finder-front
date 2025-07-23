@@ -590,10 +590,31 @@
             .mobile-menu.active .fa-bars:before {
                 content: "\f00d";
             }
-
+            
             .auth-buttons {
-                display: none;
+                flex-direction: column;
+                width: 100%;
+                padding: 1rem;
+                gap: 1rem;
             }
+
+            .auth-buttons .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .auth-buttons-mobile {
+                display: none; /* Hide on desktop */
+            }
+
+            .nav-links.active .auth-buttons-mobile {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                padding: 1rem 0;
+                gap: 1rem;
+            }
+
 
             .hero-container {
                 grid-template-columns: 1fr;
@@ -633,6 +654,9 @@
                 transform: translateY(0);
                 background: none;
                 box-shadow: none;
+            }
+            .auth-buttons-mobile {
+                display: none;
             }
         }
 
@@ -686,6 +710,16 @@
                 <li><a href="#features">Xüsusiyyətlər</a></li>
                 <li><a href="#recipes">Reseptlər</a></li>
                 <li><a href="#about">Haqqımızda</a></li>
+                <div class="auth-buttons-mobile">
+                    <a href="login.html" class="btn btn-outline">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Daxil Ol
+                    </a>
+                    <a href="register.html" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i>
+                        Qeydiyyat
+                    </a>
+                </div>
             </ul>
 
             <div class="auth-buttons">
