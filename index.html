@@ -24,13 +24,16 @@
             --dark: #2d2d2d;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: var(--dark);
             background: linear-gradient(135deg, var(--light) 0%, #fff 100%);
             overflow-x: hidden;
-            scroll-behavior: smooth;
         }
 
         /* Reusable Components */
@@ -96,6 +99,7 @@
         .header {
             position: fixed;
             top: 0;
+            left: 0;
             width: 100%;
             height: 70px;
             background: rgba(255, 255, 255, 0.95);
@@ -112,6 +116,7 @@
             padding: 1rem 5%;
             max-width: 1200px;
             margin: 0 auto;
+            height: 100%;
         }
 
         .logo {
@@ -133,6 +138,7 @@
             list-style: none;
             gap: 2rem;
             align-items: center;
+            transition: all 0.3s ease;
         }
 
         .nav-links a {
@@ -217,7 +223,7 @@
         }
 
         .hero-content h1 {
-            font-size: 3.5rem;
+            font-size: clamp(2rem, 5vw, 3.5rem);
             font-weight: 800;
             margin-bottom: 1rem;
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
@@ -228,7 +234,7 @@
         }
 
         .hero-content p {
-            font-size: 1.3rem;
+            font-size: clamp(1rem, 2vw, 1.3rem);
             margin-bottom: 2rem;
             color: #666;
             line-height: 1.7;
@@ -380,7 +386,7 @@
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 3rem;
             margin-top: 4rem;
         }
@@ -551,8 +557,20 @@
 
         /* Mobile Responsive Overrides */
         @media (max-width: 768px) {
+            .nav {
+                padding: 1rem 3%; /* Daha kiçik padding */
+            }
+
+            .logo {
+                font-size: 1.5rem;
+            }
+
+            .logo i {
+                font-size: 2rem;
+            }
+            
             .nav-links {
-                display: flex;
+                display: none;
                 flex-direction: column;
                 position: absolute;
                 top: 70px;
@@ -569,6 +587,7 @@
             }
 
             .nav-links.active {
+                display: flex;
                 transform: translateY(0);
             }
 
@@ -592,29 +611,31 @@
             }
             
             .auth-buttons {
-                flex-direction: column;
-                width: 100%;
-                padding: 1rem;
-                gap: 1rem;
-            }
-
-            .auth-buttons .btn {
-                width: 100%;
-                justify-content: center;
+                display: none;
             }
             
             .auth-buttons-mobile {
-                display: none; /* Hide on desktop */
-            }
-
-            .nav-links.active .auth-buttons-mobile {
-                display: flex;
+                display: none; /* Desktop-da gizlət */
                 flex-direction: column;
                 width: 100%;
                 padding: 1rem 0;
                 gap: 1rem;
             }
 
+            .nav-links.active .auth-buttons-mobile {
+                display: flex;
+            }
+
+            .auth-buttons-mobile .btn {
+                width: 80%;
+                margin: 0 auto;
+                justify-content: center;
+            }
+
+            .hero {
+                padding-top: 80px;
+                padding-bottom: 20px;
+            }
 
             .hero-container {
                 grid-template-columns: 1fr;
@@ -623,11 +644,37 @@
             }
 
             .hero-content h1 {
-                font-size: 2.5rem;
+                font-size: 2rem;
+            }
+
+            .hero-content p {
+                font-size: 1rem;
             }
 
             .hero-actions {
                 justify-content: center;
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .btn-large {
+                width: 80%;
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+            }
+
+            .search-container {
+                width: 100%;
+                max-width: 90%;
+            }
+
+            .hero-image {
+                height: 300px;
+            }
+
+            .hero-image i {
+                font-size: 5rem;
             }
 
             .floating-cards {
@@ -636,63 +683,45 @@
 
             .features-grid {
                 grid-template-columns: 1fr;
+                gap: 2rem;
             }
 
             .stats-container {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .stat-item h3 {
+                font-size: 2rem;
+            }
+
+            .stat-item p {
+                font-size: 0.9rem;
             }
 
             .recipes-grid {
                 grid-template-columns: 1fr;
-            }
-        }
-
-        @media (min-width: 769px) {
-            .nav-links {
-                position: static;
-                flex-direction: row;
-                transform: translateY(0);
-                background: none;
-                box-shadow: none;
-            }
-            .auth-buttons-mobile {
-                display: none;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hero-content h1 {
-                font-size: 2rem;
+                gap: 1rem;
             }
 
-            .hero-actions {
-                flex-direction: column;
-                align-items: center;
+            .recipe-card img {
+                height: 150px;
             }
 
-            .search-container {
-                width: 100%;
+            .recipe-content {
+                padding: 1rem;
             }
 
-            .stats-container {
-                grid-template-columns: 1fr;
+            .recipe-content h3 {
+                font-size: 1.2rem;
             }
-        }
 
-        /* Animations */
-        .loading {
-            opacity: 0;
-            animation: fadeInUp 1s ease forwards;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
+            .recipe-content p {
+                font-size: 0.85rem;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+
+            .about-section p {
+                font-size: 1rem;
             }
         }
     </style>
